@@ -66,7 +66,7 @@ exports.run = function(runRequest) {
                     var botlist = l.bots;
                     for (var i = 0; i < botlist.length; i++) {
                         if (botlist[i][0] === botname) {
-                            message = onMessage;
+                            message = onMessage + " They are currently in "+botlist[i][1]+" channels.";
                             break;
                         }
                     }
