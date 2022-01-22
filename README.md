@@ -14,7 +14,13 @@ Download the bot-checker.js file and store it in the custom script folder for Fi
 
 Once the script is added to the folder it can be attached to an event through the 'Run Custom Script' effect.
 
-You can choose to have to have the Streamer or Bot respond, but leave the $target as is.
+There are options you can fill in:
+
+* "Insert Bot Name Here" - leave this as $target because I'm stupid
+* "Send From" - Reply as bot or streamer.
+* " Not Found Message" - The message that displays when the user is NOT found (e.g. not a bot)
+* "Found Message" - The message that displays when the user IS found (e.g., IS a bot)
+* "Show Channels" - This appends the Found Message with the number of channels a found user is currently viewing.
 
 This was intended to be used with a command, so something akin to `!command username` would query the username and return whether or not it was on the list.
 
