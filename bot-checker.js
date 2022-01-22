@@ -20,6 +20,13 @@ exports.getDefaultParameters = function() {
                 secondaryDescription:"Message to be sent if the target is NOT found on the list.",
                 default: "SeemsGood SeemsGood $target was not found in the list of known bots, they are just lurking and we love them. SeemsGood SeemsGood"
             },
+            channelcount: {
+                type: "enum",
+                options: ["Yes", "No"],
+                default: "Yes",
+                description: "Show channels",
+                secondaryDescription: "Append the number of channels the bot is currently viewing in to the Found Message"
+            },
             onMessage: {
                 type: "string",
                 description: "Found message.",
@@ -45,6 +52,7 @@ exports.run = function(runRequest) {
     let botname = runRequest.parameters.botname;
     let offMessage = runRequest.parameters.offMessage;
     let onMessage = runRequest.parameters.onMessage;
+    let channelcount = runRequest.parameters.channelcount;
 
     // Return a Promise object
     return new Promise((resolve, reject) => {
@@ -66,7 +74,12 @@ exports.run = function(runRequest) {
                     var botlist = l.bots;
                     for (var i = 0; i < botlist.length; i++) {
                         if (botlist[i][0] === botname) {
-                            message = onMessage + " They are currently in "+botlist[i][1]+" channels.";
+                            if (channelcount === "Yes") {
+                                message = onMessage + " They are currently in "+botlist[i][1]+" channels.";
+                            }
+                            else {
+                                message = onMessage;
+                            }
                             break;
                         }
                     }
