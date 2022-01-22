@@ -1,19 +1,39 @@
 exports.getDefaultParameters = function() {
     return new Promise((resolve, reject) => {
         resolve({
-            botname: {
-                type: "string",
-                description: "Insert Bot Name here",
-                secondaryDescription: "This is the name of the bot you want to look up",
-                default: "$target"
-            },
             chatter: {
                 type: "enum",
                 options: ["Streamer", "Bot"],
                 default: "Streamer",
                 description: "Send From",
                 secondaryDescription: "Which account to send the messages from."
+            },
+            botname: {
+                type: "string",
+                description: "Insert Bot Name here",
+                secondaryDescription: "This is the name of the bot you want to look up",
+                default: "$target"
+            },
+            offMessage: {
+                type: "string",
+                description: "Not found message.",
+                secondaryDescription:"Message to be sent if the target is NOT found on the list.",
+                default: "SeemsGood SeemsGood $target was not found in the list of known bots, they are just lurking and we love them. SeemsGood SeemsGood"
+            },
+            channelcount: {
+                type: "enum",
+                options: ["Yes", "No"],
+                default: "Yes",
+                description: "Show channels",
+                secondaryDescription: "Append the number of channels the bot is currently viewing in to the Found Message"
+            },
+            onMessage: {
+                type: "string",
+                description: "Found message.",
+                secondaryDescription:"Message to be sent if the target IS found on the list.",
+                default: "MrDestructoid  MrDestructoid $target was found in the list of online bots. It might be OK to ban. MrDestructoid  MrDestructoid"
             }
+
         });
     });
 };
@@ -24,12 +44,15 @@ exports.getScriptManifest = function() {
         description: "Queries twitchinsights.net's bot list",
         author: "Patchshifter",
         firebotVersion:"5",
-        version: "0.1"
+        version: "0.2"
     };
 };
 
 exports.run = function(runRequest) {
     let botname = runRequest.parameters.botname;
+    let offMessage = runRequest.parameters.offMessage;
+    let onMessage = runRequest.parameters.onMessage;
+    let channelcount = runRequest.parameters.channelcount;
 
     // Return a Promise object
     return new Promise((resolve, reject) => {
@@ -44,19 +67,24 @@ exports.run = function(runRequest) {
 
                 let message;
                 if (content.statusCode === 404) {
-                    message = 'Something wrong happened while talking to IFTTT!';
+                    message = 'Cannot connect to Twitch Insights /shrug';
                 } else {
                     // Do the fancy work here
                     var l=JSON.parse(content);
                     var botlist = l.bots;
                     for (var i = 0; i < botlist.length; i++) {
                         if (botlist[i][0] === botname) {
-                            message ="MrDestructoid  MrDestructoid "+ botname + ' was found in the list of online bots. They are currently viewing ' +botlist[i][1]+' channels right now. It might be OK to ban. MrDestructoid  MrDestructoid ';
+                            if (channelcount === "Yes") {
+                                message = onMessage + " They are currently in "+botlist[i][1]+" channels.";
+                            }
+                            else {
+                                message = onMessage;
+                            }
                             break;
                         }
                     }
                     if (message == null) {
-                        message = 'SeemsGood SeemsGood '+botname + ' was not found in the list of known bots, it be a real person. SeemsGood SeemsGood';
+                        message = offMessage;
                     }
                 }
 
