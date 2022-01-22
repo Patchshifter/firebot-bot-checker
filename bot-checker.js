@@ -20,7 +20,7 @@ exports.getDefaultParameters = function() {
                 secondaryDescription:"Message to be sent if the target is NOT found on the list.",
                 default: "SeemsGood SeemsGood $target was not found in the list of known bots, they are just lurking and we love them. SeemsGood SeemsGood"
             },
-            omMessage: {
+            onMessage: {
                 type: "string",
                 description: "Found message.",
                 secondaryDescription:"Message to be sent if the target IS found on the list.",
@@ -44,7 +44,7 @@ exports.getScriptManifest = function() {
 exports.run = function(runRequest) {
     let botname = runRequest.parameters.botname;
     let offMessage = runRequest.parameters.offMessage;
-    let onMessage = runRequest.parameters.offMessage;
+    let onMessage = runRequest.parameters.onMessage;
 
     // Return a Promise object
     return new Promise((resolve, reject) => {
