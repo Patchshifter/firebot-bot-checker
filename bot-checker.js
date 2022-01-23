@@ -82,6 +82,7 @@ exports.run = function(runRequest) {
 
                 let message;
                 let exceptionOut;
+                let found;
                 if (content.statusCode === 404) {
                     message = 'Cannot connect to Twitch Insights /shrug';
                 } else {
@@ -100,6 +101,7 @@ exports.run = function(runRequest) {
 
                         for (var i = 0; i < botlist.length; i++) {
                             if (botlist[i][0] === botname) {
+                                found = 1;
                                 if (exceptionOut === 0) {
                                     break;
                                 }
@@ -117,7 +119,7 @@ exports.run = function(runRequest) {
                     }
                 }
             }
-        if (autoban == "Yes" && exceptionOut != 1) {
+        if (autoban == "Yes" && exceptionOut != 1 && found===1) {
                 response = {
                     success: true,
                     effects: [
