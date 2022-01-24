@@ -37,8 +37,8 @@ exports.getDefaultParameters = function() {
                 type: "enum",
                 options: ["Yes", "No"],
                 default: "No",
-                description: "Autoban bot",
-                secondaryDescription: "Have Firebot automatically ban the bot if it's on the list."
+                description: "Ban bot",
+                secondaryDescription: "Have Firebot ban the bot if the name is found on the known-bot list and not in exceptions list."
             },
             exceptions: {
                 type: "string",
@@ -57,7 +57,7 @@ exports.getScriptManifest = function() {
         description: "Queries twitchinsights.net's bot list",
         author: "Patchshifter",
         firebotVersion:"5",
-        version: "0.3"
+        version: "0.3.1"
     };
 };
 
