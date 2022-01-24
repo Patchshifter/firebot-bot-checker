@@ -32,6 +32,19 @@ exports.getDefaultParameters = function() {
                 description: "Found message.",
                 secondaryDescription:"Message to be sent if the target IS found on the list.",
                 default: "MrDestructoid  MrDestructoid $target was found in the list of online bots. It might be OK to ban. MrDestructoid  MrDestructoid"
+            },
+            autoban: {
+                type: "enum",
+                options: ["Yes", "No"],
+                default: "No",
+                description: "Autoban bot",
+                secondaryDescription: "Have Firebot automatically ban the bot if it's on the list."
+            },
+            exceptions: {
+                type: "string",
+                default: "nightbot,moobot,streamelements,streamlabs,rainmaker,dixperbro,commanderroot",
+                description: "Exceptions for the bot list.",
+                secondaryDescription: "Comma separated list of exceptions for the bot list, for user bots or known good bots (commanderroot, streamelements, nightbot, etc)"
             }
 
         });
@@ -44,7 +57,7 @@ exports.getScriptManifest = function() {
         description: "Queries twitchinsights.net's bot list",
         author: "Patchshifter",
         firebotVersion:"5",
-        version: "0.2"
+        version: "0.3"
     };
 };
 
@@ -53,6 +66,8 @@ exports.run = function(runRequest) {
     let offMessage = runRequest.parameters.offMessage;
     let onMessage = runRequest.parameters.onMessage;
     let channelcount = runRequest.parameters.channelcount;
+    let autoban = runRequest.parameters.autoban;
+    let exceptions = runRequest.parameters.exceptions.replace(/\s+/g, "").split(",");
 
     // Return a Promise object
     return new Promise((resolve, reject) => {
@@ -66,38 +81,74 @@ exports.run = function(runRequest) {
                 let content = data;
 
                 let message;
+                let exceptionOut;
+                let found;
                 if (content.statusCode === 404) {
                     message = 'Cannot connect to Twitch Insights /shrug';
                 } else {
-                    // Do the fancy work here
-                    var l=JSON.parse(content);
-                    var botlist = l.bots;
-                    for (var i = 0; i < botlist.length; i++) {
-                        if (botlist[i][0] === botname) {
-                            if (channelcount === "Yes") {
-                                message = onMessage + " They are currently in "+botlist[i][1]+" channels.";
-                            }
-                            else {
-                                message = onMessage;
-                            }
-                            break;
+                    for (var z = 0; z < exceptions.length; z++) {
+                        if (botname === exceptions[z]) {
+                            exceptionOut=1;
                         }
                     }
-                    if (message == null) {
-                        message = offMessage;
+                    if (exceptionOut === 1) {
+                        message = botname+" is on the exception list!"  
+                    }
+                    else {
+                        // Do the fancy work here
+                        var l=JSON.parse(content);
+                        var botlist = l.bots;
+
+                        for (var i = 0; i < botlist.length; i++) {
+                            if (botlist[i][0] === botname) {
+                                found = 1;
+                                if (exceptionOut === 0) {
+                                    break;
+                                }
+                                if (channelcount === "Yes") {
+                                    message = onMessage + " They are currently in "+botlist[i][1]+" channels.";
+                                }
+                                else {
+                                    message = onMessage;
+                                }
+                                break;
+                            }
+                        }
+                        if (message == null) {
+                            message = offMessage;
                     }
                 }
-
+            }
+        if (autoban == "Yes" && exceptionOut != 1 && found===1) {
                 response = {
                     success: true,
                     effects: [
                         {
-                            type: EffectType.CHAT,
+                            type: "firebot:chat",
+                            message: message,
+                            chatter: runRequest.parameters.chatter
+                        },
+                        {
+                            type: "firebot:modban",
+                            action: "Ban",
+                            username: botname
+                        }
+                        ]
+                    };
+                }
+            else {
+                response = {
+                    success: true,
+                    effects: [
+                        {
+                            type: "firebot:chat",
                             message: message,
                             chatter: runRequest.parameters.chatter
                         }
                         ]
                     };
+            }
+        
             } else {
                 // We had an error with the request. So, create an error popup in Firebot.
                 // Create a failed response

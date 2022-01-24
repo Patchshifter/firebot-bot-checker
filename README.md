@@ -21,6 +21,8 @@ There are options you can fill in:
 * " Not Found Message" - The message that displays when the user is NOT found (e.g. not a bot)
 * "Found Message" - The message that displays when the user IS found (e.g., IS a bot)
 * "Show Channels" - This appends the Found Message with the number of channels a found user is currently viewing.
+* "Auto Ban" - Selecting "Yes" will ban the bot if it is not on the exception list.  *Note:* it will not return anything if you already have them banned.  This is a bug with Firebot not handling the "already banned" exception.
+* "Exceptions list" - This is a list of comma separated usernames that are exempt--e.g. "good bots."  Things like StreamLabs, StreamElements, Nightbot, commanderroot, etc.  
 
 This was intended to be used with a command, so something akin to `!command username` would query the username and return whether or not it was on the list.
 
