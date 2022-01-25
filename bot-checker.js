@@ -132,6 +132,11 @@ exports.run = function(runRequest) {
                             type: "firebot:modban",
                             action: "Ban",
                             username: botname
+                        },
+                        {
+                            type: "firebot:chat",
+                            message: "Ban bot is set to ON, "+botname+" has been banned.",
+                            chatter: runRequest.parameters.chatter
                         }
                         ]
                     };
